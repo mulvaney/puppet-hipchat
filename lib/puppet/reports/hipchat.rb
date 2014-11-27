@@ -67,9 +67,9 @@ Puppet::Reports.register_report(:hipchat) do
     if (HIPCHAT_STATUSES.include?(self.status) || HIPCHAT_STATUSES.include?('all')) && !disabled
       Puppet.debug "Sending status for #{self.host} to Hipchat channel #{HIPCHAT_ROOM}"
         msg = "Puppet run for #{self.host} #{emote(self.status)} #{self.status} at #{Time.now.asctime} on #{self.configuration_version} in #{self.environment}"
-        if HIPCHAT_PUPPETBOARD != 'false'
+        if HIPCHAT_PUPPETBOARD != "false"
           msg << ": #{HIPCHAT_PUPPETBOARD}/report/latest/#{self.host}"
-        elsif HIPCHAT_DASHBOARD != 'false'
+        elsif HIPCHAT_DASHBOARD != "false"
           msg << ": #{HIPCHAT_DASHBOARD}/nodes/#{self.host}/view"
         end
         if HIPCHAT_PROXY
