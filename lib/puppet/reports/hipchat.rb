@@ -76,8 +76,8 @@ Puppet::Reports.register_report(:hipchat) do
         if self.status == 'changed'
           self.resource_statuses.each do |theresource,resource_status|
             if resource_status.change_count > 0
-              msg << "\n\tResource: #{resource_status.title}"
-              msg << "\n\tType: #{resource_status.resource_type}"            
+              msg << "\n  Resource: #{resource_status.title}"
+              msg << " Type: #{resource_status.resource_type}"            
             end
           end
         end
