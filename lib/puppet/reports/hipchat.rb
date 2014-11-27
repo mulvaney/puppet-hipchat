@@ -72,6 +72,16 @@ Puppet::Reports.register_report(:hipchat) do
         elsif HIPCHAT_DASHBOARD != "NONE"
           msg << "\n#{HIPCHAT_DASHBOARD}/nodes/#{self.host}/view"
         end
+        
+        if self.status == 'changed'
+          begin self.resource_statuses.each do |theresource,resource_status|
+            if resource_status.change_count > 0
+              msg << "\n\tResource: #{resource_status.title}"
+              msg << "\n\tType: #{resource_status.resource_type}"            
+            end
+          end
+        end
+        
         if HIPCHAT_PROXY
           client = HipChat::Client.new(HIPCHAT_API, :http_proxy => HIPCHAT_PROXY)
         else
