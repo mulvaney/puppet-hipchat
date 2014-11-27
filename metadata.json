@@ -1,0 +1,13 @@
+{
+  "author": "James Turnbull",
+  "dependencies": [],
+  "license": "Apache 2.0",
+  "name": "jamtur01-puppet_hipchat",
+  "operatingsystem_support": [],
+  "project_page": "https://github.com/jamtur01/puppet-hipchat",
+  "requirements": [],
+  "source": "https://github.com/jamtur01/puppet-hipchat.git",
+  "summary": "A Puppet report handler for sending notifications of failed runs to HipChat",
+  "tags": [],
+  "version": "0.4.0"
+}
