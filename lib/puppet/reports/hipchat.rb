@@ -80,6 +80,12 @@ Puppet::Reports.register_report(:hipchat) do
               msg << " Type: #{resource_status.resource_type}"            
             end
           end
+        elsif self.status == 'failed'
+          output = []
+          self.logs.each do |log|
+            output << log
+          end
+          msg << output.join("\n")
         end
         
         if HIPCHAT_PROXY
