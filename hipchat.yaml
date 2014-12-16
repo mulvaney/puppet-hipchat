@@ -7,3 +7,4 @@
 :hipchat_statuses:
   - failed
 :hipchat_puppetboard: 'false'
+:hipchat_max_message_length: 200

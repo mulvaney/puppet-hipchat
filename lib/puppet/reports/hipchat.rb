@@ -19,6 +19,7 @@ Puppet::Reports.register_report(:hipchat) do
   HIPCHAT_STATUSES = Array(config[:hipchat_statuses] || 'failed')
   HIPCHAT_PUPPETBOARD = config[:hipchat_puppetboard]
   HIPCHAT_DASHBOARD = config[:hipchat_dashboard]
+  HIPCHAT_MAX_MESSAGE_LENGTH = config[:hipchat_max_message_length]
 
   # set the default colors if not defined in the config
   HIPCHAT_FAILED_COLOR = config[:failed_color] || 'red'
@@ -60,24 +61,43 @@ Puppet::Reports.register_report(:hipchat) do
     end
   end
 
+  def truncate(string, length)
+    if length.nil? || string.size <= length
+      string
+    else
+      if length > 3
+        "#{string[0, length - 3]}..."
+      else
+        string[0, length]
+      end
+    end
+  end
+
+
+
   def process
     # Disabled check here to ensure it is checked for every report
     disabled = File.exists?(DISABLED_FILE)
 
     if (HIPCHAT_STATUSES.include?(self.status) || HIPCHAT_STATUSES.include?('all')) && !disabled
       Puppet.debug "Sending status for #{self.host} to Hipchat channel #{HIPCHAT_ROOM}"
-        msg = "Puppet run for #{self.host} #{emote(self.status)} #{self.status} at #{Time.now.asctime} on #{self.configuration_version} in #{self.environment}"
-        if HIPCHAT_PUPPETBOARD != 'false'
-          msg << ": #{HIPCHAT_PUPPETBOARD}/report/latest/#{self.host}"
-        elsif HIPCHAT_DASHBOARD != 'false'
-          msg << ": #{HIPCHAT_DASHBOARD}/nodes/#{self.host}/view"
-        end
-        if HIPCHAT_PROXY
-          client = HipChat::Client.new(HIPCHAT_API, :http_proxy => HIPCHAT_PROXY)
-        else
-          client = HipChat::Client.new(HIPCHAT_API)
-        end
-        client[HIPCHAT_ROOM].send('Puppet', msg, :notify => HIPCHAT_NOTIFY, :color => color(self.status), :message_format => 'text')
+      msg = "Puppet run for #{self.host} #{emote(self.status)} #{self.status} at #{Time.now.asctime} on #{self.configuration_version} in #{self.environment}"
+      if HIPCHAT_PUPPETBOARD != 'false'
+        msg << ": #{HIPCHAT_PUPPETBOARD}/report/latest/#{self.host}"
+      elsif HIPCHAT_DASHBOARD != 'false'
+        msg << ": #{HIPCHAT_DASHBOARD}/nodes/#{self.host}/view"
+      end
+      if HIPCHAT_PROXY
+        client = HipChat::Client.new(HIPCHAT_API, :http_proxy => HIPCHAT_PROXY)
+      else
+        client = HipChat::Client.new(HIPCHAT_API)
+      end
+
+      client[HIPCHAT_ROOM].send('Puppet',
+                                truncate(msg, HIPCHAT_MAX_MESSAGE_LENGTH),
+                                :notify => HIPCHAT_NOTIFY,
+                                :color => color(self.status),
+                                :message_format => 'text')
     end
   end
 end
